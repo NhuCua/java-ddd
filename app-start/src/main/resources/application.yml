@@ -1,2 +1,9 @@
 server:
   port: 1122
+
+aws:
+  accessKeyId: fakeMyKeyId
+  secretAccessKey: fakeSecretAccessKey
+  region: us-east-1
+  dynamodb:
+    endpoint: http://localhost:8000
