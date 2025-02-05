@@ -12,3 +12,8 @@
 - ./create_migration.sh CreateUsersTable
 
 -https://mvnrepository.com/
+
+- mvn spring-boot:run -pl app-start
+
+
+
