@@ -1,40 +1,41 @@
 package org.example.infrastructure.migration;
+
+import org.springframework.stereotype.Component;
 import jakarta.annotation.PostConstruct;
-import org.springframework.stereotype.Service;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.*;
 
 
-@Service
-public class DynamoDbMigrationService {
+@Component
+public class V1_00_TableInitializer_20250202191727 {
 
     private final DynamoDbClient dynamoDbClient;
 
-    public DynamoDbMigrationService(DynamoDbClient dynamoDbClient) {
+    public V1_00_TableInitializer_20250202191727(DynamoDbClient dynamoDbClient) {
         this.dynamoDbClient = dynamoDbClient;
     }
 
     @PostConstruct
-    public void migrate() {
-        System.out.println("🚀 Running DynamoDB Migration...");
-        createTableIfNotExists("Users", "id");
+    public void createTables() {
+        createTable("Migrations", "MigrationId");
+        createTable("Users", "userId");
     }
 
-    private void createTableIfNotExists(String tableName, String partitionKey) {
-        ListTablesResponse tables = dynamoDbClient.listTables();
-        if (tables.tableNames().contains(tableName)) {
-            System.out.println("✅ Table " + tableName + " already exists.");
+    private void createTable(String tableName, String primaryKey) {
+        boolean tableExists = dynamoDbClient.listTables().tableNames().contains(tableName);
+        if (tableExists) {
+            System.out.println("✅ Table " + tableName + " existed.");
             return;
         }
 
         CreateTableRequest request = CreateTableRequest.builder()
                 .tableName(tableName)
                 .keySchema(KeySchemaElement.builder()
-                        .attributeName(partitionKey)
-                        .keyType(KeyType.HASH)
+                        .attributeName(primaryKey)
+                        .keyType(KeyType.HASH) 
                         .build())
                 .attributeDefinitions(AttributeDefinition.builder()
-                        .attributeName(partitionKey)
+                        .attributeName(primaryKey)
                         .attributeType(ScalarAttributeType.S)
                         .build())
                 .provisionedThroughput(ProvisionedThroughput.builder()
@@ -44,7 +45,6 @@ public class DynamoDbMigrationService {
                 .build();
 
         dynamoDbClient.createTable(request);
-        System.out.println("🚀 Table " + tableName + " created successfully!");
+        System.out.println("✅ Create a table " + tableName + " success!");
     }
-
 }
