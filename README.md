@@ -1,10 +1,10 @@
--  mvn spring-boot:run
+- mvn spring-boot:run
 
 - mvn clean compile
 
--mvn clean install
+- mvn clean install
 
--mvn clean package
+- mvn clean package
 
 -rm -rf ~/.m2/repository/org/springframework
 
